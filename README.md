@@ -28,6 +28,9 @@
 - давление воды 2-3 кгс/см2
 - датчик давления  -  ММ370 (или аналог) с сопротивлением 150-200 Ом
 
+
+![Проект](https://github.com/MaxKravt/Control_artesian_well/raw/master/img/project_1.png)
+
        
       
 
