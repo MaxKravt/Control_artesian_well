@@ -42,5 +42,9 @@ struct sCell
 	long retain;				// признак сохранения в EEPROM
 };
 extern sCell cell[cellCount];
+
+int cellInit (void);
+void cellRun(void);
+
 #endif /* CELLS_H_ */
 
