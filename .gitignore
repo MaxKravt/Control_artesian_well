@@ -26,3 +26,12 @@
 *.exe
 *.out
 *.app
+*.d
+*.eep
+*.mk
+*.map
+*.elf
+.atsuo
+*.lss
+*.srec
+/Soft/PLC/PLC/Release/Makefile
