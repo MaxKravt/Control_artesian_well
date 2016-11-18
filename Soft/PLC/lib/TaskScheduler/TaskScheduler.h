@@ -3,11 +3,11 @@
 //
 // Changelog:
 // v1.0.0:
-//     2015-02-24 - Initial release 
+//     2015-02-24 - Initial release
 //     2015-02-28 - added delay() and disableOnLastIteration() methods
 //     2015-03-25 - changed scheduler execute() method for a more precise delay calculation:
 //                  1. Do not delay if any of the tasks ran (making request for immediate execution redundant)
-//                  2. Delay is invoked only if none of the tasks ran 
+//                  2. Delay is invoked only if none of the tasks ran
 //                  3. Delay is based on the min anticipated wait until next task _AND_ the runtime of execute method itself.
 //     2015-05-11 - added  restart() and restartDelayed() methods to restart tasks which are on hold after running all iterations
 //     2015-05-19 - completely removed  delay from the scheduler since there are no power saving there. using 1 ms sleep instead
@@ -22,7 +22,7 @@
 //     2015-09-20 - option to create a task already enabled
 //
 // v1.5.1:
-//	   2015-09-21 - bug fix: incorrect handling of active tasks via set() and setIterations(). 
+//	   2015-09-21 - bug fix: incorrect handling of active tasks via set() and setIterations().
 //					Thanks to Hannes Morgenstern for catching this one
 //
 // v1.6.0:
@@ -32,8 +32,8 @@
 //	   2015-10-01 - made version numbers semver compliant (documentation only)
 //
 // v1.7.0:
-//	  2015-10-08 - introduced callback run counter - callback methods can branch on the iteration number. 
-//	  2015-10-11 - enableIfNot() - enable a task only if it is not already enabled. Returns true if was already enabled, false if was disabled. 
+//	  2015-10-08 - introduced callback run counter - callback methods can branch on the iteration number.
+//	  2015-10-11 - enableIfNot() - enable a task only if it is not already enabled. Returns true if was already enabled, false if was disabled.
 //	  2015-10-11 - disable() returns previous enable state (true if was enabled, false if was already disabled)
 //	  2015-10-11 - introduced callback methods "on enable" and "on disable". On enable runs every time enable is called, on disable runs only if task was enabled
 //	  2015-10-12 - new Task method: forceNextIteration() - makes next iteration happen immediately during the next pass regardless how much time is left
@@ -72,7 +72,7 @@
 // v1.9.2:
 //    2015-11-28 - _TASK_ROLLOVER_FIX is deprecated (not necessary)
 //    2015-12-16 - bug fixes: automatic millis rollover support for delay methods
-//    2015-12-17 - new method for _TASK_TIMECRITICAL option: getStartDelay() 
+//    2015-12-17 - new method for _TASK_TIMECRITICAL option: getStartDelay()
 //
 // v2.0.0:
 //    2015-12-22 - _TASK_PRIORITY - support for layered task prioritization
@@ -121,9 +121,9 @@ THE SOFTWARE.
 /** ----------------------------------------
  * The following "defines" control library functionality at compile time,
  * and should be used in the main sketch depending on the functionality required
- * 
+ *
  *  #define _TASK_TIMECRITICAL      // Enable monitoring scheduling overruns
- *  #define _TASK_SLEEP_ON_IDLE_RUN // Enable 1 ms SLEEP_IDLE powerdowns between tasks if no callback methods were invoked during the pass 
+ *  #define _TASK_SLEEP_ON_IDLE_RUN // Enable 1 ms SLEEP_IDLE powerdowns between tasks if no callback methods were invoked during the pass
  *  #define _TASK_STATUS_REQUEST    // Compile with support for StatusRequest functionality - triggering tasks on status change events in addition to time only
  *  #define _TASK_WDT_IDS           // Compile with support for wdt control points and task ids
  *  #define _TASK_LTS_POINTER       // Compile with support for local task storage pointer
@@ -133,23 +133,23 @@ THE SOFTWARE.
 
 
  #ifdef _TASK_MICRO_RES
- 
+
  #undef _TASK_SLEEP_ON_IDLE_RUN		// SLEEP_ON_IDLE has only millisecond resolution
  #define _TASK_TIME_FUNCTION() micros()
- 
+
  #else
-	 
+
  #define _TASK_TIME_FUNCTION() millis()
- 
+
  #endif  // _TASK_MICRO_RES
- 
- 
+
+
 #ifdef _TASK_SLEEP_ON_IDLE_RUN
 
-#ifdef ARDUINO_ARCH_AVR  
+#ifdef ARDUINO_ARCH_AVR
 #include <avr/sleep.h>
 #include <avr/power.h>
-#endif  // ARDUINO_ARCH_AVR 
+#endif  // ARDUINO_ARCH_AVR
 
 #ifdef ARDUINO_ARCH_ESP8266
 extern "C" {
@@ -194,7 +194,7 @@ class StatusRequest {
 		inline bool pending() { return (iCount != 0); }
 		inline bool completed() { return (iCount == 0); }
 		inline int getStatus() { return iStatus; }
-		
+
 	private:
 		unsigned int	iCount;  					// number of statuses to wait for. waiting for more that 65000 events seems unreasonable: unsigned int should be sufficient
 		int			iStatus;  					// status of the last completed request. negative = error;  zero = OK; >positive = OK with a specific status
@@ -210,11 +210,11 @@ typedef struct  {
 #endif
 } __task_status;
 
-class Scheduler; 
+class Scheduler;
 
 
 #ifdef _TASK_WDT_IDS
-	static unsigned int __task_id_counter = 0;		// global task ID counter for assiging task IDs automatically. 
+	static unsigned int __task_id_counter = 0;		// global task ID counter for assiging task IDs automatically.
 #endif  // _TASK_WDT_IDS
 
 class Task {
@@ -229,7 +229,7 @@ class Task {
 		bool enableIfNot();
 		void enableDelayed(unsigned long aDelay=0);
 		void delay(unsigned long aDelay=0);
-		void forceNextIteration(); 
+		void forceNextIteration();
 		void restart();
 		void restartDelayed(unsigned long aDelay=0);
 		bool disable();
@@ -247,7 +247,7 @@ class Task {
 		inline long getOverrun() { return iOverrun; }
 		inline long getStartDelay() { return iStartDelay; }
 #endif  // _TASK_TIMECRITICAL
-		inline bool isFirstIteration() { return (iRunCounter <= 1); } 
+		inline bool isFirstIteration() { return (iRunCounter <= 1); }
 		inline bool isLastIteration() { return (iIterations == 0); }
 #ifdef _TASK_STATUS_REQUEST
 		void waitFor(StatusRequest* aStatusRequest, unsigned long aInterval = 0, long aIterations = 1);
@@ -264,21 +264,21 @@ class Task {
 		inline void	setLtsPointer(void *aPtr) { iLTS = aPtr; }
 		inline void* getLtsPointer() { return iLTS; }
 #endif  // _TASK_LTS_POINTER
-	
+
     private:
 		void reset();
 
 		volatile __task_status	iStatus;
 		volatile unsigned long	iInterval;			// execution interval in milliseconds (or microseconds). 0 - immediate
 		volatile unsigned long	iDelay; 			// actual delay until next execution (usually equal iInterval)
-		volatile unsigned long	iPreviousMillis;	// previous invocation time (millis).  Next invocation = iPreviousMillis + iInterval.  Delayed tasks will "catch up" 
+		volatile unsigned long	iPreviousMillis;	// previous invocation time (millis).  Next invocation = iPreviousMillis + iInterval.  Delayed tasks will "catch up"
 #ifdef _TASK_TIMECRITICAL
 		volatile long			iOverrun; 			// negative if task is "catching up" to it's schedule (next invocation time is already in the past)
 		volatile long			iStartDelay;		// actual execution of the task's callback method was delayed by this number of millis
 #endif  // _TASK_TIMECRITICAL
 		volatile long			iIterations;		// number of iterations left. 0 - last iteration. -1 - infinite iterations
 		long					iSetIterations; 		// number of iterations originally requested (for restarts)
-		unsigned long			iRunCounter;		// current number of iteration (starting with 1). Resets on enable. 
+		unsigned long			iRunCounter;		// current number of iteration (starting with 1). Resets on enable.
 		void					(*iCallback)();		// pointer to the void callback method
 		bool					(*iOnEnable)();		// pointer to the bolol OnEnable callback method
 		void					(*iOnDisable)();	// pointer to the void OnDisable method
@@ -330,7 +330,7 @@ class Scheduler {
 	private:
 		Task	*iFirst, *iLast, *iCurrent;			// pointers to first, last and current tasks in the chain
 #ifdef _TASK_SLEEP_ON_IDLE_RUN
-		bool	iAllowSleep;						// indication if putting avr to IDLE_SLEEP mode is allowed by the program at this time. 
+		bool	iAllowSleep;						// indication if putting avr to IDLE_SLEEP mode is allowed by the program at this time.
 #endif  // _TASK_SLEEP_ON_IDLE_RUN
 #ifdef _TASK_PRIORITY
 		Scheduler *iHighPriority;					// Pointer to a higher priority scheduler
@@ -359,7 +359,7 @@ Task::Task( unsigned long aInterval, long aIterations, void (*aCallback)(), Sche
 
 #ifdef _TASK_STATUS_REQUEST
 
-/** Constructor with reduced parameter list for tasks created for 
+/** Constructor with reduced parameter list for tasks created for
  *  StatusRequest only triggering (always immediate and only 1 iteration)
  */
 Task::Task( void (*aCallback)(), Scheduler* aScheduler, bool (*aOnEnable)(), void (*aOnDisable)() ) {
@@ -379,27 +379,27 @@ Task::Task( void (*aCallback)(), Scheduler* aScheduler, bool (*aOnEnable)(), voi
  */
 bool StatusRequest::signal(int aStatus) {
 	if ( iCount) {	// do not update the status request if it was already completed
-		if (iCount > 0)  --iCount; 
+		if (iCount > 0)  --iCount;
 		if ( (iStatus = aStatus) < 0 ) iCount = 0;   // if an error is reported, the status is requested to be completed immediately
 	}
-	return (iCount == 0); 
+	return (iCount == 0);
 }
 
 void StatusRequest::signalComplete(int aStatus) {
 	if (iCount) { // do not update the status request if it was already completed
-		iCount = 0; 
+		iCount = 0;
 		iStatus = aStatus;
 	}
 }
 
-/** Sets a Task to wait until a particular event completes 
+/** Sets a Task to wait until a particular event completes
  *  @param: aStatusRequest - a pointer for the StatusRequest to wait for.
- *  If aStatusRequest is NULL, request for waiting is ignored, and the waiting task is not enabled. 
+ *  If aStatusRequest is NULL, request for waiting is ignored, and the waiting task is not enabled.
  */
 void Task::waitFor(StatusRequest* aStatusRequest, unsigned long aInterval, long aIterations) {
 	if ( ( iStatusRequest = aStatusRequest) ) { // assign internal StatusRequest var and check if it is not NULL
 		setIterations(aIterations);
-		setInterval(aInterval); 
+		setInterval(aInterval);
 		iStatus.waiting = _TASK_SR_NODELAY;  // no delay
 		enable();
 	}
@@ -416,7 +416,7 @@ void Task::waitForDelayed(StatusRequest* aStatusRequest, unsigned long aInterval
 #endif  // _TASK_STATUS_REQUEST
 
 /** Resets (initializes) the task/
- * Task is not enabled and is taken out 
+ * Task is not enabled and is taken out
  * out of the execution chain as a result
  */
 void Task::reset() {
@@ -451,7 +451,7 @@ void Task::reset() {
  * @param aOnDisable - pointer to the callback method which is called on disable()
  */
 void Task::set(unsigned long aInterval, long aIterations, void (*aCallback)(),bool (*aOnEnable)(), void (*aOnDisable)()) {
-	setInterval(aInterval); 
+	setInterval(aInterval);
 	iSetIterations = iIterations = aIterations;
 	iCallback = aCallback;
 	iOnEnable = aOnEnable;
@@ -462,11 +462,11 @@ void Task::set(unsigned long aInterval, long aIterations, void (*aCallback)(),bo
  * if task is enabled, schedule for immediate execution
  * @param aIterations - number of iterations, use -1 for no limit
  */
-void Task::setIterations(long aIterations) { 
-	iSetIterations = iIterations = aIterations; 
+void Task::setIterations(long aIterations) {
+	iSetIterations = iIterations = aIterations;
 }
 
-/** Enables the task 
+/** Enables the task
  *  schedules it for execution as soon as possible,
  *  and resets the RunCounter back to zero
  */
@@ -497,7 +497,7 @@ bool Task::enableIfNot() {
 	return (previousEnabled);
 }
 
-/** Enables the task 
+/** Enables the task
  * and schedules it for execution after a delay = aInterval
  */
 void Task::enableDelayed(unsigned long aDelay) {
@@ -529,7 +529,7 @@ void Task::forceNextIteration() {
  * @param aInterval - new execution interval
  */
 void Task::setInterval (unsigned long aInterval) {
- 	iInterval = aInterval; 
+ 	iInterval = aInterval;
 	delay(); // iDelay will be updated by the delay() function
 }
 
@@ -540,7 +540,7 @@ void Task::setInterval (unsigned long aInterval) {
 bool Task::disable() {
 	bool previousEnabled = iStatus.enabled;
 	iStatus.enabled = false;
-	iStatus.inonenable = false; 
+	iStatus.inonenable = false;
 	if (previousEnabled && iOnDisable) {
 		Task *current = iScheduler->iCurrent;
 		iScheduler->iCurrent = this;
@@ -577,10 +577,10 @@ Scheduler::Scheduler() {
 
 /** Initializes all internal varaibles
  */
-void Scheduler::init() { 
-	iFirst = NULL; 
-	iLast = NULL; 
-	iCurrent = NULL; 
+void Scheduler::init() {
+	iFirst = NULL;
+	iLast = NULL;
+	iCurrent = NULL;
 #ifdef _TASK_PRIORITY
 	iHighPriority = NULL;
 #endif  // _TASK_PRIORITY
@@ -596,7 +596,7 @@ void Scheduler::init() {
  void Scheduler::addTask(Task& aTask) {
 
 	aTask.iScheduler = this;
-// First task situation: 
+// First task situation:
 	if (iFirst == NULL) {
 		iFirst = &aTask;
 		aTask.iPrev = NULL;
@@ -689,8 +689,8 @@ void Scheduler::setHighPriorityScheduler(Scheduler* aScheduler) {
 
 
 #ifdef _TASK_SLEEP_ON_IDLE_RUN
-void Scheduler::allowSleep(bool aState) { 
-	iAllowSleep = aState; 
+void Scheduler::allowSleep(bool aState) {
+	iAllowSleep = aState;
 
 #ifdef ARDUINO_ARCH_ESP8266
 	wifi_set_sleep_type( iAllowSleep ? LIGHT_SLEEP_T : NONE_SLEEP_T );
@@ -702,13 +702,13 @@ void Scheduler::allowSleep(bool aState) {
 
 void Scheduler::startNow( bool aRecursive ) {
 	unsigned long t = _TASK_TIME_FUNCTION();
-	
+
 	iCurrent = iFirst;
 	while (iCurrent) {
 		if ( iCurrent->iStatus.enabled ) iCurrent->iPreviousMillis = t - iCurrent->iDelay;
 		iCurrent = iCurrent->iNext;
 	}
-	
+
 #ifdef _TASK_PRIORITY
 	if (aRecursive && iHighPriority) iHighPriority->startNow( true );
 #endif  // _TASK_PRIORITY
@@ -718,7 +718,7 @@ void Scheduler::startNow( bool aRecursive ) {
  * Tasks are executed in the order they were added to the chain
  * There is no concept of priority
  * Different pseudo "priority" could be achieved
- * by running task more frequently 
+ * by running task more frequently
  */
 bool Scheduler::execute() {
 	bool	 idleRun = true;
@@ -730,12 +730,12 @@ bool Scheduler::execute() {
 #endif  // ARDUINO_ARCH_ESP8266
 
 	iCurrent = iFirst;
-	
+
 	while (iCurrent) {
-		
+
 #ifdef _TASK_PRIORITY
 	// If scheduler for higher priority tasks is set, it's entire chain is executed on every pass of the base scheduler
-		if (iHighPriority) idleRun = iHighPriority->execute() && idleRun; 
+		if (iHighPriority) idleRun = iHighPriority->execute() && idleRun;
 		iCurrentScheduler = this;
 #endif  // _TASK_PRIORITY
 
@@ -746,7 +746,7 @@ bool Scheduler::execute() {
 	// For each task the control points are initialized to avoid confusion because of carry-over:
 				iCurrent->iControlPoint = 0;
 #endif  // _TASK_WDT_IDS
-	
+
 	// Disable task on last iteration:
 				if (iCurrent->iIterations == 0) {
 					iCurrent->disable();
@@ -757,7 +757,7 @@ bool Scheduler::execute() {
 
 #ifdef  _TASK_STATUS_REQUEST
 	// If StatusRequest object was provided, and still pending, and task is waiting, this task should not run
-	// Otherwise, continue with execution as usual.  Tasks waiting to StatusRequest need to be rescheduled according to 
+	// Otherwise, continue with execution as usual.  Tasks waiting to StatusRequest need to be rescheduled according to
 	// how they were placed into waiting state (waitFor or waitForDelayed)
 				if ( iCurrent->iStatus.waiting ) {
 					if ( (iCurrent->iStatusRequest)->pending() ) break;
@@ -778,11 +778,11 @@ bool Scheduler::execute() {
 				iCurrent->iPreviousMillis += iCurrent->iDelay;
 
 #ifdef _TASK_TIMECRITICAL
-	// Updated_previous+current interval should put us into the future, so iOverrun should be positive or zero. 
-	// If negative - the task is behind (next execution time is already in the past) 
+	// Updated_previous+current interval should put us into the future, so iOverrun should be positive or zero.
+	// If negative - the task is behind (next execution time is already in the past)
 				unsigned long p = iCurrent->iPreviousMillis;
 				iCurrent->iOverrun = (long) ( p + i - m );
-				iCurrent->iStartDelay = (long) ( m - p ); 
+				iCurrent->iStartDelay = (long) ( m - p );
 #endif  // _TASK_TIMECRITICAL
 
 				iCurrent->iDelay = i;
@@ -791,19 +791,19 @@ bool Scheduler::execute() {
 					idleRun = false;
 				}
 			}
-		} while (0); 	//guaranteed single run - allows use of "break" to exit 
+		} while (0); 	//guaranteed single run - allows use of "break" to exit
 		iCurrent = iCurrent->iNext;
 	}
 
 #ifdef _TASK_SLEEP_ON_IDLE_RUN
   	if (idleRun && iAllowSleep) {
 
-#ifdef ARDUINO_ARCH_AVR	// Could be used only for AVR-based boards. 
+#ifdef ARDUINO_ARCH_AVR	// Could be used only for AVR-based boards.
   	  set_sleep_mode(SLEEP_MODE_IDLE);
   	  sleep_enable();
 	  /* Now enter sleep mode. */
 	  sleep_mode();
-	  
+
 	  /* The program will continue from here after the timer timeout ~1 ms */
 	  sleep_disable(); /* First thing to do is disable sleep. */
 #endif // ARDUINO_ARCH_AVR

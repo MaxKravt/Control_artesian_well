@@ -13,37 +13,33 @@
 #include "arduino.h"
 
 
-#define cellCount		30
+#define cellCount		    30
 #define cellRetainStart 20
 #define cellRetainCount 10
 
-#define MAX_CELL_BOOL	30
-#define MAX_CELL_ANA	30
+#define MAX_CELL_BOOL	  30
+#define MAX_CELL_ANA	  30
 
-#define  	MB_SIZE	30
+#define MB_SIZE 	      5
 
-#define CELL_OK			1
-#define CELL_ERROR		2
-#define CELL_LOCK		3
+#define CELL_OK			    1
+#define CELL_ERROR		  2
+#define CELL_LOCK		    3
 
-#define COMM_OK			10
-#define COMM_ERROR		11
+#define COMM_OK		      10
+#define COMM_ERROR		  11
 #define COMM_NOT_FOUND	12
 
-struct sCellBool
-{
-	unsigned int var 	:1;  // значение переменной
+struct sCellBool{
+	unsigned int var 	  :1;  // значение переменной
 	unsigned int var_o  :1;  // значение на прошлом шаге, необходимо для архивации
-	unsigned int lock :1;
+	unsigned int lock   :1;
 	unsigned int retain :1;
 };
-struct sCellAna
-{
-	union
-	{
+struct sCellAna{
+	union	{
 		int16_t var;
-		struct
-		{
+		struct {
 			uint8_t byte0;
 			uint8_t byte1;
 			uint8_t byte2;

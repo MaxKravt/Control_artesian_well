@@ -5,15 +5,13 @@
 #include "arduino.h"
 #include "modbusRTU.h"
 
-#define MB_BUFFER_SIZE    260
+#define MB_BUFFER_SIZE    50
 
-struct sFrame
-{
+struct sFrame{
   uint8_t buffer[MB_BUFFER_SIZE];
   uint16_t len;
   HardwareSerial * pPort;
-  enum eStatus
-  {
+  enum eStatus  {
     empty,
     readyToMB,
     readyToPort

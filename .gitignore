@@ -35,3 +35,4 @@
 *.lss
 *.srec
 /Soft/PLC/PLC/Release/Makefile
+*.~vsd
