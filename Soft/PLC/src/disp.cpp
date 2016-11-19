@@ -7,9 +7,9 @@
  * Подключение:
  * VCC   - +5 V
  * GND   - GND
- * DATAI -
- * CS    -
- * CLS   -
+ * DATAI - D11
+ * CS    - D10
+ * CLS   - D13
  */
 
 #include <spi.h>

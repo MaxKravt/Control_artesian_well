@@ -110,7 +110,10 @@ void cModbus::MB_0x03 (struct sFrame * pBuffer) {
 		pBuffer->buffer[2] = (char) count_reg * 2;
 		for (i = 0; i < count_reg * 2; i++)	{
 			if (address >= 1000 )
-				pBuffer->buffer[3 + i] = *(MB_Reg[(address - 1000)*2 + i]);
+        if (i%2)
+          pBuffer->buffer[3 + i] = (*(MB_Reg[(address - 1000) + i/2])) & 0xFF;
+        else
+          pBuffer->buffer[3 + i] = (*(MB_Reg[(address - 1000) + i/2])) >> 8;
 			else
 				if (i%2)
 					pBuffer->buffer[3 + i] = (unsigned char)(((address  + i/2 + pCell_a) -> var ) & 0xFF);

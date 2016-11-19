@@ -1,4 +1,5 @@
-﻿
+#define _TASK_TIMECRITICAL
+
 #include <Arduino.h>
 #include <TaskScheduler.h>
 #include "analog.h"
@@ -15,12 +16,12 @@ void loop();
 
 // Tasks
 
-Task tAdcProc(50, TASK_FOREVER, &cAdcProc);
+Task tAdcProc (2,    TASK_FOREVER, &cAdcProc);
 //Task tButton(100, TASK_FOREVER, &cButton);
-Task tCell(1000, TASK_FOREVER, &cellRun);
-Task tDisp(100, TASK_FOREVER, &cDispRun);
-Task tPort(1, TASK_FOREVER, &port2Task);
-Task tAlgoritm(100, TASK_FOREVER, &cAlgoritm);
+Task tCell    (2000, TASK_FOREVER, &cellRun);
+Task tDisp    (100,  TASK_FOREVER, &cDispRun);
+Task tPort    (1,    TASK_FOREVER, &port2Task);
+Task tAlgoritm(100,  TASK_FOREVER, &cAlgoritm);
 
 Scheduler runner;
 
@@ -30,8 +31,6 @@ void setup() {
   // Подготовка задач
   port2BeginTask();
   Serial.begin(115200);
-  // init analog
-  analogReference(false);
 
   // init digital
   cellBool[0].var = true;
@@ -68,5 +67,7 @@ void setup() {
 }
 
 void loop() {
+  cellAna[18].var =  tAdcProc.getOverrun();
+  cellAna[19].var =  tAdcProc.getStartDelay();
   runner.execute();
 }

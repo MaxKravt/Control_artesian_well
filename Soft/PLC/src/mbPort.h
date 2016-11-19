@@ -5,7 +5,7 @@
 #include "arduino.h"
 #include "modbusRTU.h"
 
-#define MB_BUFFER_SIZE    50
+#define MB_BUFFER_SIZE    60
 
 struct sFrame{
   uint8_t buffer[MB_BUFFER_SIZE];

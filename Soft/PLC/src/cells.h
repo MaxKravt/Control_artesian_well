@@ -20,7 +20,8 @@
 #define MAX_CELL_BOOL	  30
 #define MAX_CELL_ANA	  30
 
-#define MB_SIZE 	      5
+#define MB_SIZE 	      20
+extern uint16_t * MB_Reg[MB_SIZE];
 
 #define CELL_OK			    1
 #define CELL_ERROR		  2
