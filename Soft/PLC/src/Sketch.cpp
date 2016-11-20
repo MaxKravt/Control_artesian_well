@@ -1,7 +1,7 @@
 #define _TASK_TIMECRITICAL
 
 #include <Arduino.h>
-#include <TaskScheduler.h>
+#include "TaskScheduler.h"
 #include "analog.h"
 #include "button.h"
 #include "cells.h"
@@ -17,7 +17,7 @@ void loop();
 // Tasks
 
 Task tAdcProc (2,    TASK_FOREVER, &cAdcProc);
-//Task tButton(100, TASK_FOREVER, &cButton);
+Task tButton  (20, TASK_FOREVER, &cButton);
 Task tCell    (2000, TASK_FOREVER, &cellRun);
 Task tDisp    (100,  TASK_FOREVER, &cDispRun);
 Task tPort    (1,    TASK_FOREVER, &port2Task);
@@ -49,17 +49,23 @@ void setup() {
   pinMode(_DIS_RELE_K3, OUTPUT);
   pinMode(_DIS_RELE_K4, OUTPUT);
   pinMode(_DIS_RELE_K5, OUTPUT);
+  pinMode(_DIS_LED_SAU, OUTPUT);
+  pinMode(_DIS_LED_WORK, OUTPUT);
+
+  pinMode(_DIS_BUTTTON_1, INPUT_PULLUP);
+  pinMode(_DIS_BUTTTON_2, INPUT_PULLUP);
+  pinMode(_DIS_BUTTTON_3, INPUT_PULLUP);
 
   runner.init();
   runner.addTask(tAdcProc);
-  //runner.addTask(tButton);
+  runner.addTask(tButton);
   runner.addTask(tCell);
   runner.addTask(tDisp);
   runner.addTask(tPort);
   runner.addTask(tAlgoritm);
 
   tAdcProc.enable();
-  //tButton.enable();
+  tButton.enable();
   tCell.enable();
   tDisp.enable();
   tPort.enable();

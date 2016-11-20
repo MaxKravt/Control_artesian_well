@@ -1,3 +1,32 @@
+/*
+
+      Под управлением САУ находится 5 реле. Для предотвращения выхода из строя
+ * оборудования необходимо переключать их с соблюдением условия, что цепь
+ * должна быть разорвана. Для лучшего понимания как надо делать напишу таблицу
+ * переходов.
+ * ____________________________________________
+ * |                 |         Реле           |
+ * |   Состояние     +------------------------+
+ * |                 | R1 | R2 | R3 | R4 | R5 |
+ * +-----------------+----+----+----+----+----+
+ * | Отключено       | 0  | 0  | 0  | 0  | 0  |
+ * +-----------------+----+----+----+----+----+
+ * |                 |    |    |    |    |    |
+ * +-----------------+----+----+----+----+----+
+ * |                 |    |    |    |    |    |
+ * +-----------------+----+----+----+----+----+
+ * |                 |    |    |    |    |    |
+ * +-----------------+----+----+----+----+----+
+ * |                 |    |    |    |    |    |
+ * +-----------------+----+----+----+----+----+
+ * |                 |    |    |    |    |    |
+ * +-----------------+----+----+----+----+----+
+ * |                 |    |    |    |    |    |
+ * +-----------------+----+----+----+----+----+
+ *
+ */
+
+
 #include "algoritm.h"
 #include "arduino.h"
 #include "analog.h"
@@ -10,15 +39,15 @@
 #define _STEP_AVTOMAT_ON_PUMP_ON    3
 #define _STEP_ERROR                 4
 
-void cAlgoritm()
-{
-  switch (_ALG_STEP)
-  {
+
+
+void cAlgoritm(){
+  switch (_ALG_STEP)  {
     case _STEP_INIT:
       _ALG_STEP = _STEP_AVTOMAT_OFF;
       break;
     case _STEP_AVTOMAT_OFF:
-      if (1/* condition */) {
+      if (1) {
         /* code */
       }
       break;
@@ -28,7 +57,6 @@ void cAlgoritm()
       break;
     case _STEP_ERROR:
       break;
-
   };
 
   digitalWrite(_DIS_RELE_K1, cellBool[0].var);
@@ -36,6 +64,8 @@ void cAlgoritm()
   digitalWrite(_DIS_RELE_K3, cellBool[2].var);
   digitalWrite(_DIS_RELE_K4, cellBool[3].var);
   digitalWrite(_DIS_RELE_K5, cellBool[4].var);
+  digitalWrite(_DIS_LED_SAU, _SAU_WORK);
+  digitalWrite(_DIS_LED_WORK,_PUMP_WORK);
 
   // Расчет тока
   if (cellBool[20].var == 1){
@@ -50,7 +80,7 @@ void cAlgoritm()
                     ? tempAver - (float)currentArray[i]
                     : (float)currentArray[i] -tempAver;
     }
-    _CURRENT_IN = (uint16_t)tempCurrent;
+    _CURRENT_IN = (uint16_t)tempCurrent / COUNT_CURRENT_ARRAY;
     cellBool[20].var = 0;
 
   }

@@ -13,12 +13,12 @@
 #include "arduino.h"
 
 
-#define cellCount		    30
+#define cellCount		    31
 #define cellRetainStart 20
-#define cellRetainCount 10
+#define cellRetainCount 11
 
 #define MAX_CELL_BOOL	  30
-#define MAX_CELL_ANA	  30
+#define MAX_CELL_ANA	  31
 
 #define MB_SIZE 	      20
 extern uint16_t * MB_Reg[MB_SIZE];
