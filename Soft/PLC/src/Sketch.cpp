@@ -33,17 +33,6 @@ void setup() {
   Serial.begin(115200);
 
   // init digital
-  cellBool[0].var = true;
-  cellBool[1].var = true;
-  cellBool[2].var = true;
-  cellBool[3].var = true;
-  cellBool[4].var = true;
-
-  digitalWrite(_DIS_RELE_K1, 1);
-  digitalWrite(_DIS_RELE_K2, 1);
-  digitalWrite(_DIS_RELE_K3, 1);
-  digitalWrite(_DIS_RELE_K4, 1);
-
   pinMode(_DIS_RELE_K1, OUTPUT);
   pinMode(_DIS_RELE_K2, OUTPUT);
   pinMode(_DIS_RELE_K3, OUTPUT);
@@ -73,7 +62,7 @@ void setup() {
 }
 
 void loop() {
-  cellAna[18].var =  tAdcProc.getOverrun();
-  cellAna[19].var =  tAdcProc.getStartDelay();
+//  cellAna[18].var =  tDisp.getOverrun();
+//  cellAna[19].var =  tDisp.getStartDelay();
   runner.execute();
 }

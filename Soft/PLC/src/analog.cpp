@@ -4,33 +4,16 @@
 #include "define.h"
 
 uint16_t currentArray[COUNT_CURRENT_ARRAY];
-uint16_t pressureArray[COUNT_PRESSURE_ARRAY];
-static uint16_t  pointCurrentArray = 0, pointPressureArray=0, anaStep = 0;
+uint16_t pressureArrayMed[COUNT_PRESSURE_ARRAY_MED];
+static uint16_t  pointCurrentArray = 0, pointPressureArrayMed=0, anaStep = 0;
 void cAdcProc ()
 {
   static uint8_t fstCycl = 1;
   if (fstCycl == 1){
     fstCycl = 0;
-    MB_Reg[0] = &currentArray[0];
-    MB_Reg[1] = &currentArray[1];
-    MB_Reg[2] = &currentArray[2];
-    MB_Reg[3] = &currentArray[3];
-    MB_Reg[4] = &currentArray[4];
-    MB_Reg[5] = &currentArray[5];
-    MB_Reg[6] = &currentArray[6];
-    MB_Reg[7] = &currentArray[7];
-    MB_Reg[8] = &currentArray[8];
-    MB_Reg[9] = &currentArray[9];
-    MB_Reg[10] = &currentArray[10];
-    MB_Reg[11] = &currentArray[11];
-    MB_Reg[12] = &currentArray[12];
-    MB_Reg[13] = &currentArray[13];
-    MB_Reg[14] = &currentArray[14];
-    MB_Reg[15] = &currentArray[15];
-    MB_Reg[16] = &currentArray[16];
-    MB_Reg[17] = &currentArray[17];
-    MB_Reg[18] = &currentArray[18];
-    MB_Reg[19] = &currentArray[19];
+    for (size_t i = 0; i < COUNT_CURRENT_ARRAY; i++) {
+      MB_Reg[i] = &currentArray[i];
+    }
   }
 
   switch (anaStep) {
@@ -41,30 +24,30 @@ void cAdcProc ()
     }
     case 1:{
       _PRESS_ADC_IN  = analogRead(_ANA_PRESS_PUMP);
-      pointPressureArray = pointPressureArray < (COUNT_PRESSURE_ARRAY - 1)
-                          ? pointPressureArray + 1
+      pointPressureArrayMed = pointPressureArrayMed < (COUNT_PRESSURE_ARRAY_MED - 1)
+                          ? pointPressureArrayMed + 1
                           :0;
-      pressureArray[pointPressureArray] = _PRESS_ADC_IN;
-      uint16_t arrayPressureValMax = pressureArray[0];
-      uint16_t arrayPressureValMin = pressureArray[0];
+      pressureArrayMed[pointPressureArrayMed] = _PRESS_ADC_IN;
+      uint16_t arrayPressureValMax = pressureArrayMed[0];
+      uint16_t arrayPressureValMin = pressureArrayMed[0];
       size_t arrayPressureIndxMax = 0;
       size_t arrayPressureIndxMin = 0;
 
-      for (size_t i = 1; i < COUNT_PRESSURE_ARRAY; i++) {
-        if (pressureArray[i] > arrayPressureValMax) {
-          arrayPressureValMax = pressureArray[i];
+      for (size_t i = 1; i < COUNT_PRESSURE_ARRAY_MED; i++) {
+        if (pressureArrayMed[i] > arrayPressureValMax) {
+          arrayPressureValMax = pressureArrayMed[i];
           arrayPressureIndxMax = i;
         }
-        if (pressureArray[i] < arrayPressureValMin) {
-          arrayPressureValMin = pressureArray[i];
+        if (pressureArrayMed[i] < arrayPressureValMin) {
+          arrayPressureValMin = pressureArrayMed[i];
           arrayPressureIndxMin = i;
         }
       }
       uint16_t tempSumm = 0;
       uint16_t tempSummCount = 0;
-      for (size_t i = 0; i < COUNT_PRESSURE_ARRAY; i++) {
+      for (size_t i = 0; i < COUNT_PRESSURE_ARRAY_MED; i++) {
         if(i != arrayPressureIndxMax && i != arrayPressureIndxMin){
-          tempSumm += pressureArray[i];
+          tempSumm += pressureArrayMed[i];
           tempSummCount ++;
         }
       }
