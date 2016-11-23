@@ -18,7 +18,7 @@ void loop();
 
 Task tAdcProc (2,    TASK_FOREVER, &cAdcProc);
 Task tButton  (20, TASK_FOREVER, &cButton);
-Task tCell    (2000, TASK_FOREVER, &cellRun);
+Task tCell    (10000, TASK_FOREVER, &cellRun);
 Task tDisp    (100,  TASK_FOREVER, &cDispRun);
 Task tPort    (1,    TASK_FOREVER, &port2Task);
 Task tAlgoritm(100,  TASK_FOREVER, &cAlgoritm);

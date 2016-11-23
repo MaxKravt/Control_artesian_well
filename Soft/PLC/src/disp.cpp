@@ -52,7 +52,11 @@ const struct sLedCharConfig  charDecod [] = {
 	{'P', 0b01100111},
 	{'.', 0b10000000},
 	{'U', 0b00111110},
-	{'I', 0b00000110}
+	{'I', 0b00000110},
+	{'t', 0b00001111},
+	{'n', 0b00010101},
+	{'L', 0b00001110},
+	{'r', 0b00000101}
 
 };
 
@@ -63,6 +67,7 @@ void menuUp(uint8_t in)      {_MENU_STEP = in;}
 void menuDwn(uint8_t in)     {_MENU_STEP = in;}
 void menuRight(uint8_t in)   {_MENU_STEP = in;}
 void switchAvtReg(uint8_t in){_SAU_WORK = !_SAU_WORK;}
+void switchErrReset(uint8_t in){_ERROR_PUMP.var = 0; cellBool[16].var = 0;}
 
 
 struct sMenuConf {
@@ -76,7 +81,7 @@ struct sMenuConf {
 	const __FlashStringHelper * menuS ;
 	int16_t *data;
 };
-const char menuStringPGM[][7]  PROGMEM = {
+const char menuStringPGM[][9]  PROGMEM = {
 	"0 P-", //0,0	Давлене воды
 	"1 U-", //1,0	Уставка давления воды
 	"2dU-", //2,0	Гистерезис уставки
@@ -111,6 +116,13 @@ const char menuStringPGM[][7]  PROGMEM = {
 	" ",    //31
 	" ",    //32
 	" ",    //33
+	" ",    //34
+	"Err-P tr",    //35
+	"Err-I tr",    //36
+	"Err-tInE",    //37
+	"Err-I HI",    //38
+	"Err-I L0",    //39
+	" ",    //40
 };
 
 
@@ -153,6 +165,20 @@ const struct sMenuConf menuConf[]  PROGMEM = {
 																																								  // Резервы
 	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//31
 	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//32
+	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//33
+	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//34
+
+	{	switchErrReset, switchErrReset, switchErrReset,   0,  0, 0, 0, MENU_STR(35), &_ERROR_TYPE},	//35 Ошибка
+  {	switchErrReset, switchErrReset, switchErrReset,   0,  0, 0, 0, MENU_STR(36), &_ERROR_TYPE},	//36 Ошибка
+	{	switchErrReset, switchErrReset, switchErrReset,   0,  0, 0, 0, MENU_STR(37), &_ERROR_TYPE},	//37 Ошибка
+	{	switchErrReset, switchErrReset, switchErrReset,   0,  0, 0, 0, MENU_STR(38), &_ERROR_TYPE},	//38 Ошибка
+	{	switchErrReset, switchErrReset, switchErrReset,   0,  0, 0, 0, MENU_STR(39), &_ERROR_TYPE},	//39 Ошибка
+
+	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//36
+	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//37
+	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//38
+	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//39
+	{	menuUp, menuDwn, menuRight,   11,  0, 29, 1, MENU_STR(12), &cellAna[30].var},	//40
 };
 
 
@@ -184,13 +210,24 @@ void menuControl(void){
 	_BUTTON_UP.var_o   = _BUTTON_UP.var;
 	_BUTTON_DWN.var_o  = _BUTTON_DWN.var;
 	_BUTTON_RGHT.var_o = _BUTTON_RGHT.var;
-  // Если не было нажатий на кнопки 30 сек, то возвращаемся на вывод строки
+  // Если не было нажатий на кнопки 60 сек, то возвращаемся на вывод строки
 	// давления. Часть работает кроме вывода Давления или Тока.
-	if (!(_MENU_STEP == 0 || _MENU_STEP == 3)) {
-		if (millis() - timeLastClick > 30000 ) {
+	if (!(_MENU_STEP == 0 || _MENU_STEP == 3) && (_MENU_STEP < 34)) {
+		if (millis() - timeLastClick > 60000 ) {
 			_MENU_STEP = 0;
 		}
 	}
+	// Если ошибка то выводим меню ошибки
+	if (_ERROR_PUMP.var){
+		if(cellBool[14].var) _MENU_STEP = 35;
+		else if(cellBool[15].var) _MENU_STEP = 36;
+		else if(cellBool[16].var) _MENU_STEP = 37;
+		else if(_SET_I_HI.var) _MENU_STEP = 38;
+		else if(_SET_I_LO.var) _MENU_STEP = 39;
+	}
+	if (!_ERROR_PUMP.var && _ERROR_PUMP.var_o) _MENU_STEP = 0;
+	_ERROR_PUMP.var_o = _ERROR_PUMP.var;
+
 
 }
 

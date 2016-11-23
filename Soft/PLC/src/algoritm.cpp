@@ -1,9 +1,9 @@
 /*
-      Под управлением САУ находится 5 реле. Для предотвращения выхода из строя
+   NOTE   Под управлением САУ находится 5 реле. Для предотвращения выхода из строя
  * оборудования необходимо переключать их с соблюдением условия, что цепь
  * должна быть разорвана. Для лучшего понимания как надо делать напишу таблицу
  * переходов.
- * R1 -
+ * R1 - TODO
  * R2 -
  * R3 -
  * R4 -
@@ -83,7 +83,8 @@ const struct sReleyConf{
   {   7, 0, 0, 0, 0, 0, 0},
   {   8, 0, 0, 0, 0, 0, 5000},
   {   9, 0, 0, 0, 0, 0, 0},
-  {  10, 0, 0, 0, 0, 0, 0},
+  {  10, 0, 0, 0, 0, 0, 10000},
+  {  11, 0, 0, 0, 0, 0, 10000}
 };
 
 void setReleyConf(const struct sReleyConf *in){
@@ -95,21 +96,22 @@ void setReleyConf(const struct sReleyConf *in){
 }
 
 void cAlgoritm(){
-  static sTimerOn tonStep[10];
+  static sTimerOn tonStep[11];
   static uint8_t fst_cycl = 1;
   if (fst_cycl == 1) {
     fst_cycl = 0;
     _ALG_STEP.var = _STEP_01_INIT;
-    for (size_t i = 0; i < 10; i++) {
+    for (size_t i = 0; i < 11; i++) {
       tonStep[i].in = 0;
       tonStep[i].time = (uint32_t) releyConf[i].time;
     }
   }
-  for (size_t i = 0; i < 10; i++) {
+  for (size_t i = 0; i < 11; i++) {
     timeON(&tonStep[i]);
   }
 
   switch (_ALG_STEP.var)  {
+    /*************************************************************************/
     case _STEP_01_INIT:{
       tonStep[0].in = 1;
       setReleyConf(&releyConf[0]);
@@ -119,6 +121,7 @@ void cAlgoritm(){
       }
       break;
     }
+    /*************************************************************************/
     case _STEP_02_PPIO_WORK:{
       setReleyConf(&releyConf[1]);
       if (_SAU_WORK ) {
@@ -126,6 +129,7 @@ void cAlgoritm(){
       }
       break;
     }
+    /*************************************************************************/
     case _STEP_03_TO_SAU:{
       setReleyConf(&releyConf[2]);
       tonStep[2].in = 1;
@@ -139,6 +143,7 @@ void cAlgoritm(){
       }
       break;
     }
+    /*************************************************************************/
     case _STEP_04_TO_PPIO:{
       setReleyConf(&releyConf[3]);
       tonStep[3].in = 1;
@@ -152,6 +157,7 @@ void cAlgoritm(){
       }
       break;
     }
+    /*************************************************************************/
     case _STEP_05_PUMP_STOP:{
       setReleyConf(&releyConf[4]);
       tonStep[4].in = _SET_P_LO.var; /*низкое давление*/
@@ -163,8 +169,13 @@ void cAlgoritm(){
         tonStep[4].in = 0;
         _ALG_STEP.var = _STEP_06_PUMP_GO_1;
       }
+      if (_ERROR_PUMP.var) {
+        tonStep[5].in = 0;
+        _ALG_STEP.var = _STEP_ERROR;
+      }
       break;
     }
+    /*************************************************************************/
     case _STEP_06_PUMP_GO_1:{
       setReleyConf(&releyConf[5]);
       tonStep[5].in = 1;
@@ -178,8 +189,13 @@ void cAlgoritm(){
         tonStep[5].in = 0;
         _ALG_STEP.var = _STEP_07_PUMP_GO_2;
       }
+      if (_ERROR_PUMP.var) {
+        tonStep[5].in = 0;
+        _ALG_STEP.var = _STEP_ERROR;
+      }
       break;
     }
+    /*************************************************************************/
     case _STEP_07_PUMP_GO_2:{
       setReleyConf(&releyConf[6]);
       tonStep[6].in = 1;
@@ -191,8 +207,13 @@ void cAlgoritm(){
         tonStep[6].in = 0;
         _ALG_STEP.var = _STEP_08_PUMP_WORK;
       }
+      if (_ERROR_PUMP.var) {
+        tonStep[6].in = 0;
+        _ALG_STEP.var = _STEP_ERROR;
+      }
       break;
     }
+    /*************************************************************************/
     case _STEP_08_PUMP_WORK:{
       setReleyConf(&releyConf[7]);
       _PUMP_WORK = 1;
@@ -207,8 +228,14 @@ void cAlgoritm(){
         _PUMP_WORK = 0;
         _ALG_STEP.var = _STEP_09_PUMP_STOP_01;
       }
+      if (_ERROR_PUMP.var) {
+        tonStep[7].in = 0;
+        _ALG_STEP.var = _STEP_ERROR;
+      }
       break;
     }
+    /*************************************************************************/
+
     case _STEP_09_PUMP_STOP_01:{
       setReleyConf(&releyConf[8]);
       tonStep[8].in = 1;
@@ -220,8 +247,13 @@ void cAlgoritm(){
         tonStep[8].in = 0;
         _ALG_STEP.var = _STEP_10_PUMP_STOP_02;
       }
+      if (_ERROR_PUMP.var) {
+        tonStep[8].in = 0;
+        _ALG_STEP.var = _STEP_ERROR;
+      }
       break;
     }
+    /*************************************************************************/
     case _STEP_10_PUMP_STOP_02:{
       setReleyConf(&releyConf[9]);
       tonStep[9].in = 1;
@@ -233,10 +265,23 @@ void cAlgoritm(){
         tonStep[9].in = 0;
         _ALG_STEP.var = _STEP_05_PUMP_STOP;
       }
+      if (_ERROR_PUMP.var) {
+        tonStep[9].in = 0;
+        _ALG_STEP.var = _STEP_ERROR;
+      }
       break;
     }
-    case _STEP_ERROR:
+    /*************************************************************************/
+    case _STEP_ERROR:{
+      setReleyConf(&releyConf[10]);
+      _PUMP_WORK = 0;
+      tonStep[10].in = !_ERROR_PUMP.var;
+      if (tonStep[10].out) {
+        tonStep[10].in = 0;
+        _ALG_STEP.var = _STEP_05_PUMP_STOP;
+      }
       break;
+    }
   };
 
   // Вычисление тока насоса
@@ -253,22 +298,54 @@ void cAlgoritm(){
   if(_ALG_STEP.var != _STEP_08_PUMP_WORK && _ALG_STEP.var_o == _STEP_08_PUMP_WORK)
     summTimePumpWork += millis() - timePumpWork;
   if(summTimePumpWork > 60000){
-      cellAna[30].var += 60000;
+      cellAna[30].var += 1;
       summTimePumpWork -= 60000;
     }
+  // Превышено время работы насоса
+  if (cellAna[28].var > 0) {
+    if (   _ALG_STEP.var == _STEP_08_PUMP_WORK
+        && ((millis() - timePumpWork) > ((uint32_t) cellAna[28].var * 1000UL))
+       )
+      cellBool[16].var = 1;
+
+
+  }
+  else
+    cellBool[16].var = 0;
+
   _ALG_STEP.var_o = _ALG_STEP.var;
 
   // вычисление недостоверности датчика давления
-  cellBool[14].var = _PRESS_ADC_IN < 2 || _PRESS_ADC_IN > 1020 ? 1 : 0;
+  static struct sTimerOn tonPressTrust;
+  tonPressTrust.time = 1000;
+  tonPressTrust.in = _PRESS_ADC_IN < 2 || _PRESS_ADC_IN > 1020 ? 1 : 0;
+  timeON(&tonPressTrust);
+  cellBool[14].var = tonPressTrust.out;
 
   // вычисление недостоверности датчика тока
-  cellBool[15].var = _CURRENT_ADC_IN < 2 || _CURRENT_ADC_IN > 1020 ? 1 : 0;
+  static struct sTimerOn tonCurrentTrust;
+  tonCurrentTrust.time = 1000;
+  tonCurrentTrust.in = _CURRENT_ADC_IN < 2 || _CURRENT_ADC_IN > 1020 ? 1 : 0;
+  timeON(&tonCurrentTrust);
+  cellBool[15].var =tonCurrentTrust.out;
 
   // Вычисление устовок по давлению
-  _SET_P_HI.var = _PRESS_IN > (_SET_P_VAL + _DZ_P_VAL )? 1 :0;
+  _SET_P_HI.var = _PRESS_IN >= (_SET_P_VAL + _DZ_P_VAL )? 1 :0;
+  _SET_P_LO.var = _PRESS_IN <= (_SET_P_VAL - _DZ_P_VAL )? 1 :0;
 
   // Вычисление уставок по току
-  _SET_P_LO.var = _PRESS_IN < (_SET_P_VAL - _DZ_P_VAL )? 1 :0;
+  _SET_I_HI.var = _CURRENT_IN > cellAna[27].var
+                  && _ALG_STEP.var == _STEP_08_PUMP_WORK ? 1 :0;
+  _SET_I_LO.var = _CURRENT_IN < cellAna[26].var
+                  && _ALG_STEP.var == _STEP_08_PUMP_WORK? 1 :0;
+
+  // вычисление общей ошибки
+  _ERROR_PUMP.var =    cellBool[14].var //Недомтоверность показаний датчика давления
+                    || cellBool[15].var //Недостоверность показаний датчика тока
+                    || _SET_I_LO.var
+                    || _SET_I_HI.var
+                    || cellBool[16].var // Превышено время работы насос
+                    ? 1 : _ERROR_PUMP.var;
 
   // Передача управления на физический выход
   digitalWrite(_DIS_RELE_K1, cellBool[0].var);
