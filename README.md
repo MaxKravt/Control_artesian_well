@@ -28,10 +28,15 @@
 - давление воды 2-3 кгс/см2;
 - датчик давления  -  ММ370 (или аналог) с сопротивлением 150-200 Ом;
 
-4 Структурная схема
+4 Для правильной компиляции проекта необходимо:
+- Файлы из папки ArduinoFiles перенести примерно сюда:
+C:\Users\User\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.6.13\cores\arduino
+- Скомпилировать проект.
+
+5 Структурная схема
 ![Проект](https://github.com/MaxKravt/Control_artesian_well/raw/master/img/project_1.png)
 
-5 Схема подключения
+6 Схема подключения
 ![Схема](https://github.com/MaxKravt/Control_artesian_well/raw/master/img/project_2.png)
 
 
