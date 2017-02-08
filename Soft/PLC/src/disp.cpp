@@ -244,13 +244,15 @@ void cDispRun(void){
 			break;
 		}
 		case 1:{ // при включении выводитс¤ приветствие
-			// выводитс¤ давлене воды
-			//String str;
-			//static float fl = 1.0;
-			//sprintf(str, "0 P-%03i", i);
-			//fl = fl + 0.03;
-			//str  =  String("0 P-") +  String(fl, 1);
-			//ledWriteString(str);
+			static uint8_t timeout= 0;
+
+      if (timeout > 100) {
+        _DISP_STEP = 0;
+        timeout = 0;
+      }
+      else {
+        timeout ++;
+      }
 			menuControl();
 			break;
 		}

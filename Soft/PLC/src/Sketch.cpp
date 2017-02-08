@@ -33,6 +33,14 @@ void setup() {
   Serial.begin(115200);
 
   // init digital
+  digitalWrite(_DIS_RELE_K1, 1);
+  digitalWrite(_DIS_RELE_K2, 1);
+  digitalWrite(_DIS_RELE_K3, 1);
+  digitalWrite(_DIS_RELE_K4, 1);
+  digitalWrite(_DIS_RELE_K5, 0);
+  digitalWrite(_DIS_LED_SAU, 1);
+  digitalWrite(_DIS_LED_WORK, 1);
+
   pinMode(_DIS_RELE_K1, OUTPUT);
   pinMode(_DIS_RELE_K2, OUTPUT);
   pinMode(_DIS_RELE_K3, OUTPUT);
@@ -40,6 +48,8 @@ void setup() {
   pinMode(_DIS_RELE_K5, OUTPUT);
   pinMode(_DIS_LED_SAU, OUTPUT);
   pinMode(_DIS_LED_WORK, OUTPUT);
+  analogWrite(_DIS_RELE_K5_PWM, 15);
+  pinMode(_DIS_RELE_K5_PWM, OUTPUT);
 
   pinMode(_DIS_BUTTTON_1, INPUT_PULLUP);
   pinMode(_DIS_BUTTTON_2, INPUT_PULLUP);
@@ -52,6 +62,7 @@ void setup() {
   runner.addTask(tDisp);
   runner.addTask(tPort);
   runner.addTask(tAlgoritm);
+
 
   tAdcProc.enable();
   tButton.enable();

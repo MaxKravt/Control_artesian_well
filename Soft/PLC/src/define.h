@@ -14,14 +14,14 @@
 #define _DIS_RELE_K3         4
 #define _DIS_RELE_K4         5
 #define _DIS_RELE_K5         7
-
+#define _DIS_RELE_K5_PWM     6
 
 #define _DIS_LED_SAU         8
 #define _DIS_LED_WORK        9
 
-#define _DIS_BUTTTON_1       A1
+#define _DIS_BUTTTON_1       A3
 #define _DIS_BUTTTON_2       A2
-#define _DIS_BUTTTON_3       A3
+#define _DIS_BUTTTON_3       A1
 
 // Описание аналоговых ячеек
 #define _PRESS_ADC_IN      cellAna[0].var   // 00 - значение кода АЦП канала  А0
